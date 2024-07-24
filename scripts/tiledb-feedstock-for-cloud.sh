@@ -15,7 +15,7 @@ git fetch upstream --tags
 COMMIT=$(git rev-parse --short=7 $VER)
 echo Commit: $COMMIT
 
-SHA=$(curl -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-linux-x86_64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
+SHA=$(curl --fail -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-linux-x86_64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
 echo SHA: $SHA
 
 cd ~/repos/tiledb-feedstock-for-cloud
