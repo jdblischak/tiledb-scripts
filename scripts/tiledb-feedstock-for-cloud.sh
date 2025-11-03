@@ -15,8 +15,12 @@ git fetch upstream --tags
 COMMIT=$(git rev-parse --short=7 $VER)
 echo Commit: $COMMIT
 
-SHA=$(curl --fail -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-linux-x86_64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
-echo SHA: $SHA
+SHA_LINUX=$(curl --fail -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-linux-x86_64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
+echo "SHA (linux x86-64): $SHA_LINUX"
+SHA_LINUX_ARM=$(curl --fail -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-linux-arm64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
+echo "SHA (linux arm64): $SHA_LINUX_ARM"
+SHA_OSX_ARM=$(curl --fail -sL https://github.com/TileDB-Inc/TileDB/releases/download/$VER/tiledb-macos-arm64-$VER-$COMMIT.tar.gz.sha256 | cut -f1 -d ' ')
+echo "SHA (osx arm64): $SHA_OSX_ARM"
 
 cd ~/repos/tiledb-feedstock-for-cloud
 git checkout main
@@ -24,14 +28,17 @@ git pull upstream main
 git push origin main
 git checkout -b $VER
 
-sed 1,6d recipe/meta.yaml > recipe/meta.yaml.tmp
+sed 1,9d recipe/meta.yaml > recipe/meta.yaml.tmp
 cat <<EOL > recipe/meta.yaml.header
 {% set name = "TileDB" %}
 {% set version = "$VER" %}
 # pkg_version should only be different when downloading a patched release tarball
 {% set pkg_version = "$VER" %}
 {% set commit = "$COMMIT" %}
-{% set sha256 = "$SHA" %}
+# SHA256 checksums for each platform
+{% set sha256_linux_x86_64 = "$SHA_LINUX" %}
+{% set sha256_linux_aarch64 = "$SHA_LINUX_ARM" %}
+{% set sha256_osx = "$SHA_OSX_ARM" %}
 EOL
 cat recipe/meta.yaml.header recipe/meta.yaml.tmp > recipe/meta.yaml
 rm recipe/meta.yaml.header recipe/meta.yaml.tmp
